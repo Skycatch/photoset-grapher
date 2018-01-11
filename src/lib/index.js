@@ -33,6 +33,7 @@ class PhotosetGrapher {
     this.grid3d, this.point3d, this.yScale3d;
     this.intervalAlt;
     this.minimumAlt;
+    this.options = {};
   }
 
   boot (target, coordinates, basePoint) {
@@ -43,7 +44,26 @@ class PhotosetGrapher {
     this.cartesianSystem = d3.select(`svg${this.target}`)
     this.width = parseFloat(this.cartesianSystem.style('width'));
     this.height = parseFloat(this.cartesianSystem.style('height'));
+    if (this.options && this.options.gridCells) {
+      this.optionGridCells = this.options.gridCells;
+    }
+    else {
+      this.optionGridCells = kGridCells;
+    }
+
+    if (this.options && this.options.scale) {
+      this.optionGridScale = this.options.scale;
+    }
+    else {
+      this.this.optionGridScale = kScale;
+    }
     this.init();
+  }
+
+  configure (options) {
+    if (options && options.gridCells) {
+
+    }
   }
 
   init () {
@@ -68,11 +88,11 @@ class PhotosetGrapher {
     this.mx, this.my, this.mouseX, this.mouseY;
 
     this.grid3d = d3._3d()
-      .shape('SURFACE', kScale)
+      .shape('SURFACE', this.optionGridScale)
       .origin(this.origin)
       .rotateY(this.startAngle)
       .rotateX(-this.startAngle)
-      .scale(kScale);
+      .scale(this.optionGridScale);
 
     this.point3d = d3._3d()
       .x(function(d){ return d.x; })
@@ -81,14 +101,14 @@ class PhotosetGrapher {
       .origin(this.origin)
       .rotateY(this.startAngle)
       .rotateX(-this.startAngle)
-      .scale(kScale);
+      .scale(this.optionGridScale);
 
     this.yScale3d = d3._3d()
       .shape('LINE_STRIP')
       .origin(this.origin)
       .rotateY( this.startAngle)
       .rotateX(-this.startAngle)
-      .scale(kScale);
+      .scale(this.optionGridScale);
 
     let cnt = 0;
     let minX = 100000;
@@ -133,28 +153,28 @@ class PhotosetGrapher {
 
       if (Array.isArray(coord)) {
         if (coord[2]) {
-          this.scatter.push({z: ((Math.abs(coord[1]) - minX) / (maxX - minX)) * -kGridCells, x: ((Math.abs(coord[0]) - minY) / (maxY - minY)) * -kGridCells, y: ((Math.abs(coord[2]) - minZ) / (maxZ - minZ)) * -kGridCells, id: `point_${i}`});
+          this.scatter.push({z: ((Math.abs(coord[1]) - minX) / (maxX - minX)) * -this.optionGridCells, x: ((Math.abs(coord[0]) - minY) / (maxY - minY)) * -this.optionGridCells, y: ((Math.abs(coord[2]) - minZ) / (maxZ - minZ)) * -this.optionGridCells, id: `point_${i}`});
         }
         else {
-          this.scatter.push({z: ((Math.abs(coord[1]) - minX) / (maxX - minX)) * -kGridCells, x: ((Math.abs(coord[0]) - minY) / (maxY - minY)) * -kGridCells, y: 0, id: `point_${i}`});
+          this.scatter.push({z: ((Math.abs(coord[1]) - minX) / (maxX - minX)) * -this.optionGridCells, x: ((Math.abs(coord[0]) - minY) / (maxY - minY)) * -this.optionGridCells, y: 0, id: `point_${i}`});
         }
       }
       else {0
-        this.scatter.push({z: ((Math.abs(coord.x - minX)) / (maxX - minX)) * -kGridCells, x: ((Math.abs(coord.y) - minY) / (maxY - minY)) * -kGridCells, y: ((Math.abs(coord.z) - minZ) / (maxZ - minZ)) * -kGridCells || 0, id: `point_${i}`});
+        this.scatter.push({z: ((Math.abs(coord.x - minX)) / (maxX - minX)) * -this.optionGridCells, x: ((Math.abs(coord.y) - minY) / (maxY - minY)) * -this.optionGridCells, y: ((Math.abs(coord.z) - minZ) / (maxZ - minZ)) * -this.optionGridCells || 0, id: `point_${i}`});
       }
     });
 
 
-    for (let z = -kGridCells; z < kGridCells; z++) {
-      for (let x = -kGridCells; x < kGridCells; x++) {
+    for (let z = -this.optionGridCells; z < this.optionGridCells; z++) {
+      for (let x = -this.optionGridCells; x < this.optionGridCells; x++) {
         this.xGrid.push([x, 1, z]);
       }
     }
 
-    this.intervalAlt = (maxZ - minZ) / kGridCells;
+    this.intervalAlt = (maxZ - minZ) / this.optionGridCells;
     this.minimumAlt = minZ;
-    d3.range(-1, kGridCells + 1, 1).forEach((d) => {
-      this.yLine.push([-kGridCells, -d, -kGridCells]);
+    d3.range(-1, this.optionGridCells + 1, 1).forEach((d) => {
+      this.yLine.push([-this.optionGridCells, -d, -this.optionGridCells]);
     });
 
     const data = {
