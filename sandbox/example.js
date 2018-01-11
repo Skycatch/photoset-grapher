@@ -17,4 +17,3 @@ internals.CanvasSystem = new PhotosetGrapher('graph-1');
 internals.CanvasSystem.configure({scale: 16});
 // internals.CanvasSystem.boot(d3Target, sample, [0,0,0]);
 internals.CanvasSystem.boot(d3Target, sample, [42.60278027777778, 142.08271, 27.153865699049703]);
-
