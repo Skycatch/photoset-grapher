@@ -133,14 +133,14 @@ class PhotosetGrapher {
 
       if (Array.isArray(coord)) {
         if (coord[2]) {
-          this.scatter.push({x: ((Math.abs(coord[1]) - minX) / (maxX - minX)) * -kGridCells, z: ((Math.abs(coord[0]) - minY) / (maxY - minY)) * -kGridCells, y: ((Math.abs(coord[2]) - minZ) / (maxZ - minZ)) * -kGridCells, id: `point_${i}`});
+          this.scatter.push({z: ((Math.abs(coord[1]) - minX) / (maxX - minX)) * -kGridCells, x: ((Math.abs(coord[0]) - minY) / (maxY - minY)) * -kGridCells, y: ((Math.abs(coord[2]) - minZ) / (maxZ - minZ)) * -kGridCells, id: `point_${i}`});
         }
         else {
-          this.scatter.push({x: ((Math.abs(coord[1]) - minX) / (maxX - minX)) * -kGridCells, z: ((Math.abs(coord[0]) - minY) / (maxY - minY)) * -kGridCells, y: 0, id: `point_${i}`});
+          this.scatter.push({z: ((Math.abs(coord[1]) - minX) / (maxX - minX)) * -kGridCells, x: ((Math.abs(coord[0]) - minY) / (maxY - minY)) * -kGridCells, y: 0, id: `point_${i}`});
         }
       }
       else {0
-        this.scatter.push({x: ((Math.abs(coord.x - minX)) / (maxX - minX)) * -kGridCells, z: ((Math.abs(coord.y) - minY) / (maxY - minY)) * -kGridCells, y: ((Math.abs(coord.z) - minZ) / (maxZ - minZ)) * -kGridCells || 0, id: `point_${i}`});
+        this.scatter.push({z: ((Math.abs(coord.x - minX)) / (maxX - minX)) * -kGridCells, x: ((Math.abs(coord.y) - minY) / (maxY - minY)) * -kGridCells, y: ((Math.abs(coord.z) - minZ) / (maxZ - minZ)) * -kGridCells || 0, id: `point_${i}`});
       }
     });
 
