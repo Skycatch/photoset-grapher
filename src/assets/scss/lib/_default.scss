@@ -1,7 +1,21 @@
 svg {
   text._3d {
-    &.yText {
-      font-size: 10px;
+    &.yText,
+    &.xText,
+    &.zText {
+      font-size: 9px;
+    }
+  }
+
+  path._3d {
+    &.xScale {
+      stroke: red;
+    }
+    &.yScale {
+      stroke: blue;
+    }
+    &.zScale {
+      stroke: green;
     }
   }
 }
