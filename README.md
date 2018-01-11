@@ -16,7 +16,7 @@ The css if applicable will be located in the `dist` folder of the node_module
 
 
 ```javascript
-const PhotosetGrapher = window['@skycatch/photoset-grapher'];
+const PhotosetGrapher = require('@skycatch/photoset-grapher');
 
 const coordinates = [
   [142.08271,42.60278027777778,54.35],
