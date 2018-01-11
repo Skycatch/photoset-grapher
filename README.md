@@ -1,6 +1,6 @@
 # Library for showing 3d coordinates on an interactive d3 coordinate system
  
-![Screenshot](https://user-images.githubusercontent.com/4627728/34818737-939c49cc-f670-11e7-8998-85406d2d86c6.png)
+![Screenshot](https://user-images.githubusercontent.com/4627728/34851227-ee48acf4-f6dd-11e7-92c2-2654be44c16a.png)
 
 This module is framework agnostic so it can be used with React, Angular, Vue, or whatever other frameworks you so choose.
 
