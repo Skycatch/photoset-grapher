@@ -31,12 +31,15 @@ class PhotosetGrapher {
     this.cartesianSystem;
     this.width, this.height;
     this.grid3d, this.point3d, this.yScale3d;
+    this.intervalAlt;
+    this.minimumAlt;
   }
 
-  boot (target, coordinates) {
+  boot (target, coordinates, basePoint) {
 
     this.target = target;
     this.coordinates = coordinates;
+    this.basePoint = basePoint;
     this.cartesianSystem = d3.select(`svg${this.target}`)
     this.width = parseFloat(this.cartesianSystem.style('width'));
     this.height = parseFloat(this.cartesianSystem.style('height'));
@@ -65,7 +68,7 @@ class PhotosetGrapher {
     this.mx, this.my, this.mouseX, this.mouseY;
 
     this.grid3d = d3._3d()
-      .shape('GRID', kScale)
+      .shape('SURFACE', kScale)
       .origin(this.origin)
       .rotateY(this.startAngle)
       .rotateX(-this.startAngle)
@@ -88,19 +91,25 @@ class PhotosetGrapher {
       .scale(kScale);
 
     let cnt = 0;
-    let minX = 0;
-    let minY = 0;
-    let minZ = 0;
+    let minX = 100000;
+    let minY = 100000;
+    let minZ = 100000;
     let maxX = 0;
     let maxY = 0;
     let maxZ = 0;
 
+    if (this.basePoint) {
+      if (Array.isArray(this.basePoint)) {
+        minZ = Math.abs(this.basePoint[2]);
+      }
+      else {
+        minZ = Math.abs(this.basePoint.z);
+      }
+    }
+
     this.coordinates.forEach((coord, i) => {
 
       if (Array.isArray(coord)) {
-        if ( i === 0 ) {
-          minX = Math.abs(coord[1]); maxX = Math.abs(coord[1]); minY = Math.abs(coord[0]); maxY = Math.abs(coord[0]); minZ = Math.abs(coord[2]); maxZ = Math.abs(coord[2]);
-        }
         if (minX > Math.abs(coord[1])) minX = Math.abs(coord[1]);
         if (maxX < Math.abs(coord[1])) maxX = Math.abs(coord[1]);
         if (minY > Math.abs(coord[0])) minY = Math.abs(coord[0]);
@@ -111,9 +120,6 @@ class PhotosetGrapher {
         }
       }
       else {
-        if ( i === 0 ) {
-          minX = Math.abs(coord.x); maxX = Math.abs(coord.x); minY = Math.abs(coord.y); maxY = Math.abs(coord.y); minZ = Math.abs(coord.z || 0); maxZ = Math.abs(coord.z || 0);
-        }
         if (minX > Math.abs(coord.x)) minX = Math.abs(coord.x);
         if (maxX < Math.abs(coord.x)) maxX = Math.abs(coord.x);
         if (minY > Math.abs(coord.y)) minY = Math.abs(coord.y);
@@ -145,7 +151,11 @@ class PhotosetGrapher {
       }
     }
 
-    d3.range(-kGridCells / 10, kGridCells + kGridCells / 10, kGridCells / 10).forEach((d) => { this.yLine.push([-kGridCells, -d, -kGridCells]); });
+    this.intervalAlt = (maxZ - minZ) / kGridCells;
+    this.minimumAlt = minZ;
+    d3.range(-1, kGridCells + 1, 1).forEach((d) => {
+      this.yLine.push([-kGridCells, -d, -kGridCells]);
+    });
 
     const data = {
       grid3d: this.grid3d(this.xGrid),
@@ -229,7 +239,7 @@ class PhotosetGrapher {
       })
       .attr('x', (d) => { return d.projected.x; })
       .attr('y', (d) => { return d.projected.y; })
-      .text((d) => { return d[1] <= 0 ? d[1] : ''; });
+      .text((d) => { return d[1] <= 0 ? (this.minimumAlt + (Math.abs(d[1]) * this.intervalAlt)).toFixed(1) : ''; });
 
     yText.exit().remove();
 
