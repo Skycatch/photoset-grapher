@@ -55,7 +55,7 @@ class PhotosetGrapher {
       this.optionGridScale = this.options.scale;
     }
     else {
-      this.this.optionGridScale = kScale;
+      this.optionGridScale = kScale;
     }
     this.init();
   }
