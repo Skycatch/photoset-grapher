@@ -1,6 +1,6 @@
 {
   "name": "@skycatch/photoset-grapher",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Reusuable module for quick plotting of 3d coordinates into an interactible graph coordinate system",
   "main": "index.js",
   "webpack": "index.js",

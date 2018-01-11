@@ -172,7 +172,7 @@ class PhotosetGrapher {
       if (Array.isArray(coord)) {
         if (coord[2]) {
           this.scatter.push({
-            x: smartDivision(Math.abs((coord[0]) - minX), (maxX - minX)) * this.gridCells,
+            x: smartDivision((Math.abs(coord[0]) - minX), (maxX - minX)) * this.gridCells,
             y: smartDivision((Math.abs(coord[1]) - minY), (maxY - minY)) * this.gridCells,
             z: smartDivision((Math.abs(coord[2]) - minZ), (maxZ - minZ)) * this.gridCells,
             id: `point_${i}`
@@ -189,7 +189,7 @@ class PhotosetGrapher {
       }
       else {
         this.scatter.push({
-          x: smartDivision((Math.abs(coord.x - minX)), (maxX - minX)) * this.gridCells,
+          x: smartDivision((Math.abs(coord.x) - minX), (maxX - minX)) * this.gridCells,
           y: smartDivision((Math.abs(coord.y) - minY), (maxY - minY)) * this.gridCells,
           z: smartDivision((Math.abs(coord.z) - minZ), (maxZ - minZ)) * this.gridCells || 0,
           id: `point_${i}`

@@ -8,13 +8,17 @@ svg {
   }
 
   path._3d {
+
     &.xScale {
+      stroke-width: 3;
       stroke: red;
     }
     &.yScale {
+      stroke-width: 3;
       stroke: blue;
     }
     &.zScale {
+      stroke-width: 3;
       stroke: green;
     }
   }

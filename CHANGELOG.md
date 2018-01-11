@@ -1,5 +1,8 @@
 # Changelog
 
+v1.0.3
+- fix for negative numbers
+
 v1.0.2
 - correct the axis labels + data
 
