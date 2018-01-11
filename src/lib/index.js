@@ -16,7 +16,6 @@ const d3 = Object.assign({},
   drag,
   array,
   color,
-  random,
   _3d
 );
 
