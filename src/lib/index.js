@@ -52,17 +52,21 @@ class PhotosetGrapher {
     }
 
     if (this.options && this.options.scale) {
-      this.optionGridScale = this.options.scale;
+      this.optionScale = this.options.scale;
     }
     else {
-      this.optionGridScale = kScale;
+      this.optionScale = kScale;
     }
+
     this.init();
   }
 
   configure (options) {
     if (options && options.gridCells) {
-
+      this.options.gridCells = options.gridCells;
+    }
+    if (options && options.scale) {
+      this.options.scale = options.scale;
     }
   }
 
@@ -88,11 +92,11 @@ class PhotosetGrapher {
     this.mx, this.my, this.mouseX, this.mouseY;
 
     this.grid3d = d3._3d()
-      .shape('SURFACE', this.optionGridScale)
+      .shape('SURFACE', this.optionScale)
       .origin(this.origin)
       .rotateY(this.startAngle)
       .rotateX(-this.startAngle)
-      .scale(this.optionGridScale);
+      .scale(this.optionScale);
 
     this.point3d = d3._3d()
       .x(function(d){ return d.x; })
@@ -101,14 +105,14 @@ class PhotosetGrapher {
       .origin(this.origin)
       .rotateY(this.startAngle)
       .rotateX(-this.startAngle)
-      .scale(this.optionGridScale);
+      .scale(this.optionScale);
 
     this.yScale3d = d3._3d()
       .shape('LINE_STRIP')
       .origin(this.origin)
       .rotateY( this.startAngle)
       .rotateX(-this.startAngle)
-      .scale(this.optionGridScale);
+      .scale(this.optionScale);
 
     let cnt = 0;
     let minX = 100000;
