@@ -14,14 +14,15 @@ The css if applicable will be located in the `dist` folder of the node_module
 
 ## Interface
 
+Coordinates are as follows: [x, y, z]
 
 ```javascript
 const PhotosetGrapher = require('@skycatch/photoset-grapher');
 
 const coordinates = [
-  [142.08271,42.60278027777778,54.35],
-  [142.083625,42.60330861111111,53.97],
-  [142.08395611111112,42.60307666666667,55.8]
+  [142.08271, 42.60278027777778, 54.35],
+  [142.083625, 42.60330861111111, 53.97],
+  [142.08395611111112, 42.60307666666667, 55.8]
 ];
 
 const CanvasSystem = new PhotosetGrapher('graph-1');
@@ -55,9 +56,9 @@ CanvasSystem.boot('#section', coordinates, [42.60278027777778, 142.08271, 27.153
 
 ```javascript
  [
-   [142.0827,42.6027,54.35],
-   [142.0836,42.6033,53.97],
-   [142.0839,42.6030,55.80]
+   [142.0827, 42.6027, 54.35],
+   [142.0836, 42.6033, 53.97],
+   [142.0839, 42.6030, 55.80]
  ]
 ```
 * `ground_coordinate_lng_lat_alt` - Array: Coordinate of a point on the surface (here altitude of the ground is ~27 meters)

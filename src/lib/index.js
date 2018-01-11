@@ -21,6 +21,12 @@ const d3 = Object.assign({},
 
 const kScale = 20;
 
+const smartDivision = (a, b) => {
+
+  let result = a / b;
+  return isNaN(result) ? 0 : result;
+}
+
 class PhotosetGrapher {
 
   constructor (id) {
@@ -29,9 +35,9 @@ class PhotosetGrapher {
     this.target;
     this.cartesianSystem;
     this.width, this.height;
-    this.grid3d, this.point3d, this.yScale3d;
-    this.intervalAlt;
-    this.minimumAlt;
+    this.grid3d, this.point3d, this.yScale3d, this.xScale3d, this.zScale3d;
+    this.intervalY, this.intervalX, this.intervalZ;
+    this.minimumY, this.minimumX, this.minimumZ;
     this.options = {};
   }
 
@@ -63,13 +69,16 @@ class PhotosetGrapher {
 
   init () {
 
-    this.origin = [this.width / 1.5, this.height / 1.5];
+    this.origin = [this.width / 2, this.height / 2];
     this.scatter = [];
     this.yLine = [];
+    this.xLine = [];
+    this.zLine = [];
     this.xGrid = [];
     this.beta = 0;
     this.alpha = 0;
-    this.startAngle = Math.PI/4;
+    //this.startAngle = -Math.PI/30;
+    this.startAngle = 0;
 
     this.cartesianSystem
       .call(
@@ -101,7 +110,21 @@ class PhotosetGrapher {
     this.yScale3d = d3._3d()
       .shape('LINE_STRIP')
       .origin(this.origin)
-      .rotateY( this.startAngle)
+      .rotateY(this.startAngle)
+      .rotateX(-this.startAngle)
+      .scale(this.optionScale);
+
+    this.xScale3d = d3._3d()
+      .shape('LINE_STRIP')
+      .origin(this.origin)
+      .rotateY(this.startAngle)
+      .rotateX(-this.startAngle)
+      .scale(this.optionScale);
+
+    this.zScale3d = d3._3d()
+      .shape('LINE_STRIP')
+      .origin(this.origin)
+      .rotateY(this.startAngle)
       .rotateX(-this.startAngle)
       .scale(this.optionScale);
 
@@ -125,10 +148,10 @@ class PhotosetGrapher {
     this.coordinates.forEach((coord, i) => {
 
       if (Array.isArray(coord)) {
-        if (minX > Math.abs(coord[1])) minX = Math.abs(coord[1]);
-        if (maxX < Math.abs(coord[1])) maxX = Math.abs(coord[1]);
-        if (minY > Math.abs(coord[0])) minY = Math.abs(coord[0]);
-        if (maxY < Math.abs(coord[0])) maxY = Math.abs(coord[0]);
+        if (minX > Math.abs(coord[0])) minX = Math.abs(coord[0]);
+        if (maxX < Math.abs(coord[0])) maxX = Math.abs(coord[0]);
+        if (minY > Math.abs(coord[1])) minY = Math.abs(coord[1]);
+        if (maxY < Math.abs(coord[1])) maxY = Math.abs(coord[1]);
         if (coord[2]) {
           if (minZ > Math.abs(coord[2])) minZ = Math.abs(coord[2]);
           if (maxZ < Math.abs(coord[2])) maxZ = Math.abs(coord[2]);
@@ -148,34 +171,60 @@ class PhotosetGrapher {
 
       if (Array.isArray(coord)) {
         if (coord[2]) {
-          this.scatter.push({z: ((Math.abs(coord[1]) - minX) / (maxX - minX)) * -this.gridCells, x: ((Math.abs(coord[0]) - minY) / (maxY - minY)) * -this.gridCells, y: ((Math.abs(coord[2]) - minZ) / (maxZ - minZ)) * -this.gridCells, id: `point_${i}`});
+          this.scatter.push({
+            x: smartDivision(Math.abs((coord[0]) - minX), (maxX - minX)) * this.gridCells,
+            y: smartDivision((Math.abs(coord[1]) - minY), (maxY - minY)) * this.gridCells,
+            z: smartDivision((Math.abs(coord[2]) - minZ), (maxZ - minZ)) * this.gridCells,
+            id: `point_${i}`
+          });
         }
         else {
-          this.scatter.push({z: ((Math.abs(coord[1]) - minX) / (maxX - minX)) * -this.gridCells, x: ((Math.abs(coord[0]) - minY) / (maxY - minY)) * -this.gridCells, y: 0, id: `point_${i}`});
+          this.scatter.push({
+            x: smartDivision((Math.abs(coord[0]) - minX), (maxX - minX)) * this.gridCells,
+            y: smartDivision((Math.abs(coord[1]) - minY), (maxY - minY)) * this.gridCells,
+            z: 0,
+            id: `point_${i}`
+          });
         }
       }
-      else {0
-        this.scatter.push({z: ((Math.abs(coord.x - minX)) / (maxX - minX)) * -this.gridCells, x: ((Math.abs(coord.y) - minY) / (maxY - minY)) * -this.gridCells, y: ((Math.abs(coord.z) - minZ) / (maxZ - minZ)) * -this.gridCells || 0, id: `point_${i}`});
+      else {
+        this.scatter.push({
+          x: smartDivision((Math.abs(coord.x - minX)), (maxX - minX)) * this.gridCells,
+          y: smartDivision((Math.abs(coord.y) - minY), (maxY - minY)) * this.gridCells,
+          z: smartDivision((Math.abs(coord.z) - minZ), (maxZ - minZ)) * this.gridCells || 0,
+          id: `point_${i}`
+        });
       }
     });
 
 
-    for (let z = -this.gridCells; z < this.gridCells; z++) {
+    for (let y = -this.gridCells; y < this.gridCells; y++) {
       for (let x = -this.gridCells; x < this.gridCells; x++) {
-        this.xGrid.push([x, 1, z]);
+        this.xGrid.push([x, y, 1]);
       }
     }
 
-    this.intervalAlt = (maxZ - minZ) / this.gridCells;
-    this.minimumAlt = minZ;
+    this.intervalZ = (maxZ - minZ) / this.gridCells;
+    this.minimumZ = minZ;
+
+    this.intervalX = (maxX - minX) / this.gridCells;
+    this.minimumX = minX;
+
+    this.intervalY = (maxY - minY) / this.gridCells;
+    this.minimumY = minY;
+
     d3.range(0, this.gridCells + 1, 1).forEach((d) => {
-      this.yLine.push([-this.gridCells, -d, -this.gridCells]);
+      this.xLine.push([d, 0, 0]);
+      this.yLine.push([0, d, 0]);
+      this.zLine.push([0, 0, d]);
     });
 
     const data = {
       grid3d: this.grid3d(this.xGrid),
       point3d: this.point3d(this.scatter),
-      yScale3d: this.yScale3d([this.yLine])
+      yScale3d: this.yScale3d([this.yLine]),
+      xScale3d: this.xScale3d([this.xLine]),
+      zScale3d: this.zScale3d([this.zLine])
     };
 
     this.processData(data, 1000);
@@ -224,8 +273,46 @@ class PhotosetGrapher {
 
     points.exit().remove();
 
-    /* ----------- y-Scale ----------- */
 
+    /* ----------- x-Scale ----------- */
+    const xScale = this.cartesianSystem.selectAll('path.xScale').data(data.xScale3d);
+
+    xScale
+      .enter()
+      .append('path')
+      .attr('class', '_3d xScale')
+      .merge(xScale)
+      .attr('stroke', 'black')
+      .attr('stroke-width', .5)
+      .attr('d', this.xScale3d.draw);
+
+    xScale.exit().remove();
+
+     /* ----------- x-Scale Text ----------- */
+
+    const xText = this.cartesianSystem.selectAll('text.xText').data(data.xScale3d[0]);
+
+    // xText
+    //   .enter()
+    //   .append('text')
+    //   .attr('class', '_3d xText')
+    //   .attr('dx', '.3em')
+    //   .merge(xText)
+    //   .each(function(d){
+    //     if (d) {
+    //       d.centroid = {x: d.rotated.x, y: d.rotated.y, z: d.rotated.z};
+    //     }
+    //   })
+    //   .attr('x', (d) => { return d.projected.x; })
+    //   .attr('y', (d) => { return d.projected.y; })
+    //   .text((d) => { return (this.minimumX + (Math.abs(d[0]) * this.intervalX)).toFixed(1) });
+
+    // xText.exit().remove();
+
+    d3.selectAll('._3d').sort(d3._3d().sort);
+
+
+    /* ----------- y-Scale ----------- */
     const yScale = this.cartesianSystem.selectAll('path.yScale').data(data.yScale3d);
 
     yScale
@@ -243,12 +330,50 @@ class PhotosetGrapher {
 
     const yText = this.cartesianSystem.selectAll('text.yText').data(data.yScale3d[0]);
 
-    yText
+    // yText
+    //   .enter()
+    //   .append('text')
+    //   .attr('class', '_3d yText')
+    //   .attr('dx', '.3em')
+    //   .merge(yText)
+    //   .each(function(d){
+    //     if (d) {
+    //       d.centroid = {x: d.rotated.x, y: d.rotated.y, z: d.rotated.z};
+    //     }
+    //   })
+    //   .attr('x', (d) => { return d.projected.x; })
+    //   .attr('y', (d) => { return d.projected.y; })
+    //   .text((d) => { return (this.minimumY + (Math.abs(d[1]) * this.intervalY)).toFixed(1) });
+
+    // yText.exit().remove();
+
+    d3.selectAll('._3d').sort(d3._3d().sort);
+
+    /* ----------- z-Scale ----------- */
+
+    const zScale = this.cartesianSystem.selectAll('path.zScale').data(data.zScale3d);
+
+    zScale
+      .enter()
+      .append('path')
+      .attr('class', '_3d zScale')
+      .merge(zScale)
+      .attr('stroke', 'black')
+      .attr('stroke-width', .5)
+      .attr('d', this.zScale3d.draw);
+
+    zScale.exit().remove();
+
+     /* ----------- y-Scale Text ----------- */
+
+    const zText = this.cartesianSystem.selectAll('text.zText').data(data.zScale3d[0]);
+
+    zText
       .enter()
       .append('text')
-      .attr('class', '_3d yText')
+      .attr('class', '_3d zText')
       .attr('dx', '.3em')
-      .merge(yText)
+      .merge(zText)
       .each(function(d){
         if (d) {
           d.centroid = {x: d.rotated.x, y: d.rotated.y, z: d.rotated.z};
@@ -256,9 +381,9 @@ class PhotosetGrapher {
       })
       .attr('x', (d) => { return d.projected.x; })
       .attr('y', (d) => { return d.projected.y; })
-      .text((d) => { return d[1] <= 0 ? (this.minimumAlt + (Math.abs(d[1]) * this.intervalAlt)).toFixed(1) : ''; });
+      .text((d) => { return (this.minimumZ + (Math.abs(d[2]) * this.intervalZ)).toFixed(1) });
 
-    yText.exit().remove();
+    zText.exit().remove();
 
     d3.selectAll('._3d').sort(d3._3d().sort);
   }
@@ -286,11 +411,12 @@ class PhotosetGrapher {
     this.beta = (currentEvent.x - this.mx + this.mouseX) * Math.PI / 230 ;
     this.alpha  = (currentEvent.y - this.my + this.mouseY) * Math.PI / 230  * (-1);
 
-
     const data = {
       grid3d: this.grid3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)(this.xGrid),
       point3d: this.point3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)(this.scatter),
       yScale3d: this.yScale3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)([this.yLine]),
+      xScale3d: this.xScale3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)([this.xLine]),
+      zScale3d: this.zScale3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)([this.zLine])
     };
 
     this.processData(data, 0);
