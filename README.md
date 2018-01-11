@@ -1,104 +1,70 @@
-# Library for implementing an image pixel marker for ML training
+# Library for showing 3d coordinates on an interactive d3 coordinate system
  
-![Screenshot](https://user-images.githubusercontent.com/4627728/31919244-e004a99c-b815-11e7-8547-1ce77bcbfc0e.png)
+![Screenshot](https://user-images.githubusercontent.com/4627728/34818737-939c49cc-f670-11e7-8998-85406d2d86c6.png)
 
-This library is framework agnostic so it can be used with React, Angular, Vue, or whatever other frameworks you so choose.
+This module is framework agnostic so it can be used with React, Angular, Vue, or whatever other frameworks you so choose.
 
-To use this library in your application import it as follows for the javascript
+To use this module in your application import it as follows for the javascript
 
 ```javascript
-const ModelTrainerImageMarker = reqire('@skycatch/model-trainer-image-marker');
+const PhotosetGrapher = reqire('@skycatch/photoset-grapher');
 ```
 
 The css if applicable will be located in the `dist` folder of the node_module
 
-
-
 ## Interface
-
-Pass in an in-memory Image object using the [https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/Image](API)
-
-URL can either be a http image url, or created from an in memory file with `window.URL.createObjectURL`
 
 
 ```javascript
-const ModelTrainerImageMarker = require('@skycatch/model-trainer-image-marker');
-const url = "https://user-images.githubusercontent.com/4627728/31919244-e004a99c-b815-11e7-8547-1ce77bcbfc0e.png";
-const MarkerSystem = new ModelTrainerImageMarker('imageId');
-const img = new Image();
-img.onload = () => {
-    MarkerSystem.boot(img, 'PoI-1', '#system', null, null, {
-      onReady: myOnReady.bind(this),
-      onMark: myOnMarked.bind(this),
-      onMarkClick: myOnMarkerClicked.bind(this),
-      onMarkDelete: myOnMarkDelete.bind(this),
-      onZoomReset: myOnZoomReset.bind(this),
-      onZoomToCP: myOnZoomToCP.bind(this)
-    });
-});
-img.src = url;
+const PhotosetGrapher = require('@skycatch/photoset-grapher');
+
+const coordinates = [
+  [142.08271,42.60278027777778,54.35],
+  [142.083625,42.60330861111111,53.97],
+  [142.08395611111112,42.60307666666667,55.8]
+];
+
+const CanvasSystem = new PhotosetGrapher('graph-1');
+CanvasSystem.configure({ scale: 10 }); // optional
+CanvasSystem.boot('#section', coordinates, [42.60278027777778, 142.08271, 27.153865699049703]);
+
 ```
 
 
 ## API 
 
-**new ModelTrainerImageMarker(imageId)**
+**new PhotosetGrapher(uid)**
 
-* `imageId` - _String_: UID of image
+* `uid` - _String_: UID of graph
 
-**MarkerSystem.configure(options)** - _JSON_: Configuration optinos
+**PhotosetGrapher.configure(options)** - _JSON_: Configuration options (optional)
 
 * `options`
 
 ```javascript
  {
-      'targetIcon': '#svg-xlink:href'
+      'scale': 10
  }
 ```
 
 
-**MarkerSystem.boot(img, poi-Id, DOM-Id, alreadyMarked, currentMark, events)**
+**PhotosetGrapher.boot(SVG-DOM-Id, array_of_coordinates_lng_lat_alt, ground_coordinate_lng_lat_alt)**
 
-* `img` - _Image()_: In-memory Image object
-* `poi-Id` - _String_: UID of Point of Interest PoI)
-* `DOM-Id` - _String_: DOM Element UID
-* `alreadyMarked` - _Array[JSON]_: Array of points of interest already marked in this image
+* `SVG-DOM-Id` - _String_: DOM Element UID
+* `array_of_coordinates_lng_lat_alt` - _Array[ARRAY]_: Array of Arrays of [x,y,z] coordinates in any coordinate system
 
 ```javascript
- [{
-      'cpId': 'PoI-1',
-      'x': 2500,
-      'y': 1000
- }]
+ [
+   [142.0827,42.6027,54.35],
+   [142.0836,42.6033,53.97],
+   [142.0839,42.6030,55.80]
+ ]
 ```
-* `currentMark` - _JSON_: Access to live marking session
+* `ground_coordinate_lng_lat_alt` - Array: Coordinate of a point on the surface (here altitude of the ground is ~27 meters)
 
 ```javascript
- {
-      'cpId': 'PoI-1',
-      'x': 2500,
-      'y': 1000
- }
+ [42.6027, 142.0827, 27.1530]
 ```
-- `events` - _JSON_: Event Listener Handles
-  - onReady
-  - onMark
-  - onMarkClick
-  - onMarkDelete
-  - onZoomReset
-  - onZoomToCP
-
-## Interact
-
-**MarkerSystem.resetZoom(duration)** - _(ms)_ - zooms back to the original centered - non-zoomed state
-
-**MarkerSystem.findCP(duration)** - _(ms)_ - focus + zooms to the marked PoI id marked
-
-**MarkerSystem.clearMarker()** - Removes the mark from the image
-
-**MarkerSystem.reDrawMarker()** - Redraws the marker (incase configuration changes have occured)
-
-
 
 ## What's in the box?
 
