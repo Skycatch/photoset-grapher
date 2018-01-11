@@ -168,7 +168,7 @@ class PhotosetGrapher {
 
     this.intervalAlt = (maxZ - minZ) / this.gridCells;
     this.minimumAlt = minZ;
-    d3.range(-1, this.gridCells + 1, 1).forEach((d) => {
+    d3.range(0, this.gridCells + 1, 1).forEach((d) => {
       this.yLine.push([-this.gridCells, -d, -this.gridCells]);
     });
 
