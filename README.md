@@ -1,6 +1,6 @@
 # Library for showing 3d coordinates on an interactive d3 coordinate system
  
-![Screenshot]()
+![Screenshot](https://user-images.githubusercontent.com/4627728/34818737-939c49cc-f670-11e7-8998-85406d2d86c6.png)
 
 This module is framework agnostic so it can be used with React, Angular, Vue, or whatever other frameworks you so choose.
 
@@ -25,7 +25,7 @@ const coordinates = [
 ];
 
 const CanvasSystem = new PhotosetGrapher('graph-1');
-CanvasSystem.configure({gridCells: 20, scale: 10}); // optional
+CanvasSystem.configure({ scale: 10 }); // optional
 CanvasSystem.boot('#section', coordinates, [42.60278027777778, 142.08271, 27.153865699049703]);
 
 ```
@@ -43,7 +43,6 @@ CanvasSystem.boot('#section', coordinates, [42.60278027777778, 142.08271, 27.153
 
 ```javascript
  {
-      'gridCells': 20,
       'scale': 10
  }
 ```

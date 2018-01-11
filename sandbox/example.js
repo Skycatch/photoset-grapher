@@ -14,6 +14,6 @@ const sample = [[142.08271,42.60278027777778,54.35],[142.0831225,42.602819444444
 
 
 internals.CanvasSystem = new PhotosetGrapher('graph-1');
-internals.CanvasSystem.configure({gridCells: 5, scale: 25});
+internals.CanvasSystem.configure({scale: 18});
 internals.CanvasSystem.boot(d3Target, sample, [42.60278027777778, 142.08271, 27.153865699049703]);
 

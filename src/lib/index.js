@@ -19,7 +19,6 @@ const d3 = Object.assign({},
   _3d
 );
 
-const kGridCells = 10;
 const kScale = 20;
 
 class PhotosetGrapher {
@@ -44,27 +43,19 @@ class PhotosetGrapher {
     this.cartesianSystem = d3.select(`svg${this.target}`)
     this.width = parseFloat(this.cartesianSystem.style('width'));
     this.height = parseFloat(this.cartesianSystem.style('height'));
-    if (this.options && this.options.gridCells) {
-      this.optionGridCells = this.options.gridCells;
-    }
-    else {
-      this.optionGridCells = kGridCells;
-    }
 
     if (this.options && this.options.scale) {
-      this.optionScale = this.options.scale;
+      this.optionScale = this.options.scale % 2 === 0 ? this.options.scale : this.options.scale - 1;
     }
     else {
       this.optionScale = kScale;
     }
 
+    this.gridCells = this.optionScale / 2;
     this.init();
   }
 
   configure (options) {
-    if (options && options.gridCells) {
-      this.options.gridCells = options.gridCells;
-    }
     if (options && options.scale) {
       this.options.scale = options.scale;
     }
@@ -72,7 +63,7 @@ class PhotosetGrapher {
 
   init () {
 
-    this.origin = [this.width / 2, this.height / 2];
+    this.origin = [this.width / 1.5, this.height / 1.5];
     this.scatter = [];
     this.yLine = [];
     this.xGrid = [];
@@ -157,28 +148,28 @@ class PhotosetGrapher {
 
       if (Array.isArray(coord)) {
         if (coord[2]) {
-          this.scatter.push({z: ((Math.abs(coord[1]) - minX) / (maxX - minX)) * -this.optionGridCells, x: ((Math.abs(coord[0]) - minY) / (maxY - minY)) * -this.optionGridCells, y: ((Math.abs(coord[2]) - minZ) / (maxZ - minZ)) * -this.optionGridCells, id: `point_${i}`});
+          this.scatter.push({z: ((Math.abs(coord[1]) - minX) / (maxX - minX)) * -this.gridCells, x: ((Math.abs(coord[0]) - minY) / (maxY - minY)) * -this.gridCells, y: ((Math.abs(coord[2]) - minZ) / (maxZ - minZ)) * -this.gridCells, id: `point_${i}`});
         }
         else {
-          this.scatter.push({z: ((Math.abs(coord[1]) - minX) / (maxX - minX)) * -this.optionGridCells, x: ((Math.abs(coord[0]) - minY) / (maxY - minY)) * -this.optionGridCells, y: 0, id: `point_${i}`});
+          this.scatter.push({z: ((Math.abs(coord[1]) - minX) / (maxX - minX)) * -this.gridCells, x: ((Math.abs(coord[0]) - minY) / (maxY - minY)) * -this.gridCells, y: 0, id: `point_${i}`});
         }
       }
       else {0
-        this.scatter.push({z: ((Math.abs(coord.x - minX)) / (maxX - minX)) * -this.optionGridCells, x: ((Math.abs(coord.y) - minY) / (maxY - minY)) * -this.optionGridCells, y: ((Math.abs(coord.z) - minZ) / (maxZ - minZ)) * -this.optionGridCells || 0, id: `point_${i}`});
+        this.scatter.push({z: ((Math.abs(coord.x - minX)) / (maxX - minX)) * -this.gridCells, x: ((Math.abs(coord.y) - minY) / (maxY - minY)) * -this.gridCells, y: ((Math.abs(coord.z) - minZ) / (maxZ - minZ)) * -this.gridCells || 0, id: `point_${i}`});
       }
     });
 
 
-    for (let z = -this.optionGridCells; z < this.optionGridCells; z++) {
-      for (let x = -this.optionGridCells; x < this.optionGridCells; x++) {
+    for (let z = -this.gridCells; z < this.gridCells; z++) {
+      for (let x = -this.gridCells; x < this.gridCells; x++) {
         this.xGrid.push([x, 1, z]);
       }
     }
 
-    this.intervalAlt = (maxZ - minZ) / this.optionGridCells;
+    this.intervalAlt = (maxZ - minZ) / this.gridCells;
     this.minimumAlt = minZ;
-    d3.range(-1, this.optionGridCells + 1, 1).forEach((d) => {
-      this.yLine.push([-this.optionGridCells, -d, -this.optionGridCells]);
+    d3.range(-1, this.gridCells + 1, 1).forEach((d) => {
+      this.yLine.push([-this.gridCells, -d, -this.gridCells]);
     });
 
     const data = {
@@ -259,7 +250,9 @@ class PhotosetGrapher {
       .attr('dx', '.3em')
       .merge(yText)
       .each(function(d){
-        d.centroid = {x: d.rotated.x, y: d.rotated.y, z: d.rotated.z};
+        if (d) {
+          d.centroid = {x: d.rotated.x, y: d.rotated.y, z: d.rotated.z};
+        }
       })
       .attr('x', (d) => { return d.projected.x; })
       .attr('y', (d) => { return d.projected.y; })
@@ -292,6 +285,7 @@ class PhotosetGrapher {
     this.mouseY = this.mouseY || 0;
     this.beta = (currentEvent.x - this.mx + this.mouseX) * Math.PI / 230 ;
     this.alpha  = (currentEvent.y - this.my + this.mouseY) * Math.PI / 230  * (-1);
+
 
     const data = {
       grid3d: this.grid3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)(this.xGrid),
