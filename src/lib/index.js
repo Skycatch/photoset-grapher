@@ -201,39 +201,39 @@ class PhotosetGrapher {
 
     /* ----------- y-Scale ----------- */
 
-    // const yScale = this.cartesianSystem.selectAll('path.yScale').data(data.yScale3d);
+    const yScale = this.cartesianSystem.selectAll('path.yScale').data(data.yScale3d);
 
-    // yScale
-    //   .enter()
-    //   .append('path')
-    //   .attr('class', '_3d yScale')
-    //   .merge(yScale)
-    //   .attr('stroke', 'black')
-    //   .attr('stroke-width', .5)
-    //   .attr('d', this.yScale3d.draw);
+    yScale
+      .enter()
+      .append('path')
+      .attr('class', '_3d yScale')
+      .merge(yScale)
+      .attr('stroke', 'black')
+      .attr('stroke-width', .5)
+      .attr('d', this.yScale3d.draw);
 
-    // yScale.exit().remove();
+    yScale.exit().remove();
 
      /* ----------- y-Scale Text ----------- */
 
-    // const yText = this.cartesianSystem.selectAll('text.yText').data(data.yScale3d[0]);
+    const yText = this.cartesianSystem.selectAll('text.yText').data(data.yScale3d[0]);
 
-    // yText
-    //   .enter()
-    //   .append('text')
-    //   .attr('class', '_3d yText')
-    //   .attr('dx', '.3em')
-    //   .merge(yText)
-    //   .each(function(d){
-    //     d.centroid = {x: d.rotated.x, y: d.rotated.y, z: d.rotated.z};
-    //   })
-    //   .attr('x', (d) => { return d.projected.x; })
-    //   .attr('y', (d) => { return d.projected.y; })
-    //   .text((d) => { return d[1] <= 0 ? d[1] : ''; });
+    yText
+      .enter()
+      .append('text')
+      .attr('class', '_3d yText')
+      .attr('dx', '.3em')
+      .merge(yText)
+      .each(function(d){
+        d.centroid = {x: d.rotated.x, y: d.rotated.y, z: d.rotated.z};
+      })
+      .attr('x', (d) => { return d.projected.x; })
+      .attr('y', (d) => { return d.projected.y; })
+      .text((d) => { return d[1] <= 0 ? d[1] : ''; });
 
-    // yText.exit().remove();
+    yText.exit().remove();
 
-    // d3.selectAll('._3d').sort(d3._3d().sort);
+    d3.selectAll('._3d').sort(d3._3d().sort);
   }
 
   posPointX (d) {
