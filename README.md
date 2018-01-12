@@ -26,7 +26,7 @@ const coordinates = [
 ];
 
 const CanvasSystem = new PhotosetGrapher();
-CanvasSystem.configure({ scale: 10 }); // optional
+CanvasSystem.configure({ scale: 10, animate: true }); // optional
 CanvasSystem.boot('#section', coordinates, [42.60278027777778, 142.08271, 27.153865699049703]);
 
 ```

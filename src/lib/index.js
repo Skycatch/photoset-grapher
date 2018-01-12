@@ -86,9 +86,9 @@ class PhotosetGrapher {
     this.xLine = [];
     this.zLine = [];
     this.xGrid = [];
+    this.alpha = Math.PI/20;
     this.beta = 0;
-    this.alpha = 0;
-    this.startAngle = -Math.PI/30;
+    this.startAngle = 0;
 
     this.cartesianSystem
       .call(
@@ -103,9 +103,10 @@ class PhotosetGrapher {
 
     this.grid3d = d3._3d()
       .shape('SURFACE', this.optionScale)
-      .origin(this.origin)
+      .origin([0,0])
       .rotateY(this.startAngle)
       .rotateX(-this.startAngle)
+      .rotateZ(this.startAngle)
       .scale(this.optionScale);
 
     this.point3d = d3._3d()
@@ -115,6 +116,7 @@ class PhotosetGrapher {
       .origin(this.origin)
       .rotateY(this.startAngle)
       .rotateX(-this.startAngle)
+      .rotateZ(this.startAngle)
       .scale(this.optionScale);
 
     this.yScale3d = d3._3d()
@@ -122,6 +124,7 @@ class PhotosetGrapher {
       .origin(this.origin)
       .rotateY(this.startAngle)
       .rotateX(-this.startAngle)
+      .rotateZ(this.startAngle)
       .scale(this.optionScale);
 
     this.xScale3d = d3._3d()
@@ -129,6 +132,7 @@ class PhotosetGrapher {
       .origin(this.origin)
       .rotateY(this.startAngle)
       .rotateX(-this.startAngle)
+      .rotateZ(this.startAngle)
       .scale(this.optionScale);
 
     this.zScale3d = d3._3d()
@@ -136,6 +140,7 @@ class PhotosetGrapher {
       .origin(this.origin)
       .rotateY(this.startAngle)
       .rotateX(-this.startAngle)
+      .rotateZ(this.startAngle)
       .scale(this.optionScale);
 
     let cnt = 0;
@@ -210,7 +215,7 @@ class PhotosetGrapher {
 
     for (let y = -this.gridCells; y < this.gridCells; y++) {
       for (let x = -this.gridCells; x < this.gridCells; x++) {
-        this.xGrid.push([x, y, 1]);
+        this.xGrid.push([x, y, minZ]);
       }
     }
 
@@ -245,158 +250,175 @@ class PhotosetGrapher {
 
     const key = function(d){ return d.id; };
 
-    /* ----------- GRID ----------- */
+    if (data.grid3d) {
 
-    this.xGrid = this.cartesianSystem.selectAll('path.grid').data(data.grid3d, key);
+      /* ----------- GRID ----------- */
 
-    this.xGrid
-      .enter()
-      .append('path')
-      .attr('class', '_3d grid')
-      .merge(this.xGrid)
-      .attr('stroke', 'black')
-      .attr('stroke-width', 0.3)
-      .attr('fill', (d) => { return d.ccw ? 'lightgrey' : '#717171'; })
-      .attr('fill-opacity', 0.9)
-      .attr('d', data.grid3d.draw);
+      this.xGrid = this.cartesianSystem.selectAll('path.grid').data(data.grid3d, key);
 
-    this.xGrid.exit().remove();
+      this.xGrid
+        .enter()
+        .append('path')
+        .attr('class', '_3d grid')
+        .merge(this.xGrid)
+        .attr('stroke', 'black')
+        .attr('stroke-width', 0.3)
+        .attr('fill', (d) => { return d.ccw ? 'lightgrey' : '#717171'; })
+        .attr('fill-opacity', 0.9)
+        .attr('d', data.grid3d.draw);
+
+      this.xGrid.exit().remove();
+    }
+
+    if (data.point3d) {
 
     /* ----------- POINTS ----------- */
 
-    const points = this.cartesianSystem.selectAll('circle').data(data.point3d, key);
+      const points = this.cartesianSystem.selectAll('circle').data(data.point3d, key);
 
-    points
-      .enter()
-      .append('circle')
-      .attr('class', '_3d')
-      .attr('opacity', 0)
-      .attr('cx', this.posPointX)
-      .attr('cy', this.posPointY)
-      .merge(points)
-      .transition().duration(tt)
-      .attr('r', 3)
-      .attr('stroke', (d) => { return d3.color(this.color(d.id)).darker(3); })
-      .attr('fill', (d) => { return this.color(d.id); })
-      .attr('opacity', 1)
-      .attr('cx', this.posPointX)
-      .attr('cy', this.posPointY);
+      points
+        .enter()
+        .append('circle')
+        .attr('class', '_3d')
+        .attr('opacity', 0)
+        .attr('cx', this.posPointX)
+        .attr('cy', this.posPointY)
+        .attr('cz', this.posPointZ)
+        .merge(points)
+        .transition().duration(tt)
+        .attr('r', 3)
+        .attr('stroke', (d) => { return d3.color(this.color(d.id)).darker(3); })
+        .attr('fill', (d) => { return this.color(d.id); })
+        .attr('opacity', 1)
+        .attr('cx', this.posPointX)
+        .attr('cy', this.posPointY)
+        .attr('cz', this.posPointZ);
 
-    points.exit().remove();
+      points.exit().remove();
+    }
 
+    if (data.xScale3d) {
 
-    /* ----------- x-Scale ----------- */
-    const xScale = this.cartesianSystem.selectAll('path.xScale').data(data.xScale3d);
+      /* ----------- x-Scale ----------- */
+      const xScale = this.cartesianSystem.selectAll('path.xScale').data(data.xScale3d);
 
-    xScale
-      .enter()
-      .append('path')
-      .attr('class', '_3d xScale')
-      .merge(xScale)
-      .attr('stroke', 'black')
-      .attr('stroke-width', .5)
-      .attr('d', this.xScale3d.draw);
+      xScale
+        .enter()
+        .append('path')
+        .attr('class', '_3d xScale')
+        .merge(xScale)
+        .attr('stroke', 'black')
+        .attr('stroke-width', .5)
+        .attr('d', this.xScale3d.draw);
 
-    xScale.exit().remove();
+      xScale.exit().remove();
 
-     /* ----------- x-Scale Text ----------- */
+       /* ----------- x-Scale Text ----------- */
 
-    const xText = this.cartesianSystem.selectAll('text.xText').data(data.xScale3d[0]);
+      const xText = this.cartesianSystem.selectAll('text.xText').data(data.xScale3d[0]);
 
-    // xText
-    //   .enter()
-    //   .append('text')
-    //   .attr('class', '_3d xText')
-    //   .attr('dx', '.3em')
-    //   .merge(xText)
-    //   .each(function(d){
-    //     if (d) {
-    //       d.centroid = {x: d.rotated.x, y: d.rotated.y, z: d.rotated.z};
-    //     }
-    //   })
-    //   .attr('x', (d) => { return d.projected.x; })
-    //   .attr('y', (d) => { return d.projected.y; })
-    //   .text((d) => { return (this.minimumX + (Math.abs(d[0]) * this.intervalX)).toFixed(1) });
+      // xText
+      //   .enter()
+      //   .append('text')
+      //   .attr('class', '_3d xText')
+      //   .attr('dx', '.3em')
+      //   .merge(xText)
+      //   .each(function(d){
+      //     if (d) {
+      //       d.centroid = {x: d.rotated.x, y: d.rotated.y, z: d.rotated.z};
+      //     }
+      //   })
+      //   .attr('x', (d) => { return d.projected.x; })
+      //   .attr('y', (d) => { return d.projected.y; })
+      //   .text((d) => { return (this.minimumX + (Math.abs(d[0]) * this.intervalX)).toFixed(1) });
 
-    // xText.exit().remove();
+      // xText.exit().remove();
 
-    d3.selectAll('._3d').sort(d3._3d().sort);
+      d3.selectAll('._3d').sort(d3._3d().sort);
+    }
 
+    if (data.yScale3d) {
 
-    /* ----------- y-Scale ----------- */
-    const yScale = this.cartesianSystem.selectAll('path.yScale').data(data.yScale3d);
+      /* ----------- y-Scale ----------- */
+      const yScale = this.cartesianSystem.selectAll('path.yScale').data(data.yScale3d);
 
-    yScale
-      .enter()
-      .append('path')
-      .attr('class', '_3d yScale')
-      .merge(yScale)
-      .attr('stroke', 'black')
-      .attr('stroke-width', .5)
-      .attr('d', this.yScale3d.draw);
+      yScale
+        .enter()
+        .append('path')
+        .attr('class', '_3d yScale')
+        .merge(yScale)
+        .attr('stroke', 'black')
+        .attr('stroke-width', .5)
+        .attr('d', this.yScale3d.draw);
 
-    yScale.exit().remove();
+      yScale.exit().remove();
 
-     /* ----------- y-Scale Text ----------- */
+       /* ----------- y-Scale Text ----------- */
 
-    const yText = this.cartesianSystem.selectAll('text.yText').data(data.yScale3d[0]);
+      const yText = this.cartesianSystem.selectAll('text.yText').data(data.yScale3d[0]);
 
-    // yText
-    //   .enter()
-    //   .append('text')
-    //   .attr('class', '_3d yText')
-    //   .attr('dx', '.3em')
-    //   .merge(yText)
-    //   .each(function(d){
-    //     if (d) {
-    //       d.centroid = {x: d.rotated.x, y: d.rotated.y, z: d.rotated.z};
-    //     }
-    //   })
-    //   .attr('x', (d) => { return d.projected.x; })
-    //   .attr('y', (d) => { return d.projected.y; })
-    //   .text((d) => { return (this.minimumY + (Math.abs(d[1]) * this.intervalY)).toFixed(1) });
+      // yText
+      //   .enter()
+      //   .append('text')
+      //   .attr('class', '_3d yText')
+      //   .attr('dx', '.3em')
+      //   .merge(yText)
+      //   .each(function(d){
+      //     if (d) {
+      //       d.centroid = {x: d.rotated.x, y: d.rotated.y, z: d.rotated.z};
+      //     }
+      //   })
+      //   .attr('x', (d) => { return d.projected.x; })
+      //   .attr('y', (d) => { return d.projected.y; })
+      //   .text((d) => { return (this.minimumY + (Math.abs(d[1]) * this.intervalY)).toFixed(1) });
 
-    // yText.exit().remove();
+      // yText.exit().remove();
 
-    d3.selectAll('._3d').sort(d3._3d().sort);
+      d3.selectAll('._3d').sort(d3._3d().sort);
+    }
 
-    /* ----------- z-Scale ----------- */
+    if (data.zScale3d) {
 
-    const zScale = this.cartesianSystem.selectAll('path.zScale').data(data.zScale3d);
+      /* ----------- z-Scale ----------- */
 
-    zScale
-      .enter()
-      .append('path')
-      .attr('class', '_3d zScale')
-      .merge(zScale)
-      .attr('stroke', 'black')
-      .attr('stroke-width', .5)
-      .attr('d', this.zScale3d.draw);
+      const zScale = this.cartesianSystem.selectAll('path.zScale').data(data.zScale3d);
 
-    zScale.exit().remove();
+      zScale
+        .enter()
+        .append('path')
+        .attr('class', '_3d zScale')
+        .merge(zScale)
+        .attr('stroke', 'black')
+        .attr('stroke-width', .5)
+        .attr('d', this.zScale3d.draw);
 
-     /* ----------- y-Scale Text ----------- */
+      zScale.exit().remove();
 
-    const zText = this.cartesianSystem.selectAll('text.zText').data(data.zScale3d[0]);
+       /* ----------- y-Scale Text ----------- */
 
-    zText
-      .enter()
-      .append('text')
-      .attr('class', '_3d zText')
-      .attr('dx', '.3em')
-      .merge(zText)
-      .each(function(d){
-        if (d) {
-          d.centroid = {x: d.rotated.x, y: d.rotated.y, z: d.rotated.z};
-        }
-      })
-      .attr('x', (d) => { return d.projected.x; })
-      .attr('y', (d) => { return d.projected.y; })
-      .text((d) => { return (this.minimumZ + (Math.abs(d[2]) * this.intervalZ)).toFixed(1) });
+      const zText = this.cartesianSystem.selectAll('text.zText').data(data.zScale3d[0]);
 
-    zText.exit().remove();
+      zText
+        .enter()
+        .append('text')
+        .attr('class', '_3d zText')
+        .attr('dx', '.3em')
+        .merge(zText)
+        .each(function(d){
+          if (d) {
+            d.centroid = {x: d.rotated.x, y: d.rotated.y, z: d.rotated.z};
+          }
+        })
+        .attr('x', (d) => { return d.projected.x; })
+        .attr('y', (d) => { return d.projected.y; })
+        .attr('z', (d) => { return d.projected.z; })
+        .text((d) => { return (this.minimumZ + (Math.abs(d[2]) * this.intervalZ)).toFixed(1) });
 
-    d3.selectAll('._3d').sort(d3._3d().sort);
+      zText.exit().remove();
+
+      d3.selectAll('._3d').sort(d3._3d().sort);
+    }
+
   }
 
   posPointX (d) {
@@ -407,6 +429,11 @@ class PhotosetGrapher {
   posPointY (d) {
 
     return d.projected.y;
+  }
+
+  posPointZ (d) {
+
+    return d.projected.z;
   }
 
   dragStart () {
@@ -443,15 +470,25 @@ class PhotosetGrapher {
   animate (tt) {
 
     this.animation = setInterval(() => {
-      this.beta += Math.PI/180;
-      this.alpha += 0;
+      this.alpha += Math.PI/360;
+      this.beta += 0;
       const data = {
-        grid3d: this.grid3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)(this.xGrid),
-        point3d: this.point3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)(this.scatter),
-        yScale3d: this.yScale3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)([this.yLine]),
-        xScale3d: this.xScale3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)([this.xLine]),
-        zScale3d: this.zScale3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)([this.zLine])
+        grid3d: this.grid3d.rotateX(this.alpha - this.startAngle)(this.xGrid),
+        point3d: this.point3d.rotateX(this.alpha - this.startAngle)(this.scatter),
+        yScale3d: this.yScale3d.rotateX(this.alpha - this.startAngle)([this.yLine]),
+        xScale3d: this.xScale3d.rotateX(this.alpha - this.startAngle)([this.xLine]),
+        zScale3d: this.zScale3d.rotateX(this.alpha - this.startAngle)([this.zLine])
       };
+
+      // TODO investigate source for issue here
+      // const data = {
+      //   grid3d: this.grid3d.rotateZ(this.alpha - this.startAngle)(this.xGrid),
+      //   point3d: this.point3d.rotateZ(this.alpha - this.startAngle)(this.scatter),
+      //   yScale3d: this.yScale3d.rotateZ(this.alpha - this.startAngle)([this.yLine]),
+      //   xScale3d: this.xScale3d.rotateZ(this.alpha - this.startAngle)([this.xLine]),
+      //   zScale3d: this.zScale3d.rotateZ(this.alpha - this.startAngle)([this.zLine])
+      // };
+
       this.processData(data, 0);
     }, tt);
   }
