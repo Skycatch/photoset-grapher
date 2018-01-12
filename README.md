@@ -7,7 +7,7 @@ This module is framework agnostic so it can be used with React, Angular, Vue, or
 To use this module in your application import it as follows for the javascript
 
 ```javascript
-const PhotosetGrapher = reqire('@skycatch/photoset-grapher');
+const PhotosetGrapher = require('@skycatch/photoset-grapher');
 ```
 
 The css if applicable will be located in the `dist` folder of the node_module
