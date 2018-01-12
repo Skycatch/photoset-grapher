@@ -1,5 +1,8 @@
 # Changelog
 
+v1.0.4
+- added animate
+
 v1.0.3
 - fix for negative numbers
 

@@ -25,8 +25,8 @@ const coordinates = [
   [142.08395611111112, 42.60307666666667, 55.8]
 ];
 
-const CanvasSystem = new PhotosetGrapher('graph-1');
-CanvasSystem.configure({ scale: 10 }); // optional
+const CanvasSystem = new PhotosetGrapher();
+CanvasSystem.configure({ scale: 10, animate: true }); // optional
 CanvasSystem.boot('#section', coordinates, [42.60278027777778, 142.08271, 27.153865699049703]);
 
 ```
@@ -34,9 +34,7 @@ CanvasSystem.boot('#section', coordinates, [42.60278027777778, 142.08271, 27.153
 
 ## API 
 
-**new PhotosetGrapher(uid)**
-
-* `uid` - _String_: UID of graph
+**new PhotosetGrapher()**
 
 **PhotosetGrapher.configure(options)** - _JSON_: Configuration options (optional)
 
@@ -44,7 +42,8 @@ CanvasSystem.boot('#section', coordinates, [42.60278027777778, 142.08271, 27.153
 
 ```javascript
  {
-      'scale': 10
+      'scale': 10,
+      'animate': true
  }
 ```
 
