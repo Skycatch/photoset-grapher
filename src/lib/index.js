@@ -65,6 +65,7 @@ class PhotosetGrapher {
     }
 
     this.gridCells = this.optionScale / 2;
+
     this.init();
   }
 
@@ -78,7 +79,7 @@ class PhotosetGrapher {
     }
   }
 
-  init () {
+  init (limit) {
 
     this.origin = [this.width / 2, this.height / 2];
     this.scatter = [];
@@ -184,31 +185,33 @@ class PhotosetGrapher {
 
     this.coordinates.forEach((coord, i) => {
 
-      if (Array.isArray(coord)) {
-        if (coord[2]) {
-          this.scatter.push({
-            x: smartDivision((Math.abs(coord[0]) - minX), (maxX - minX)) * this.gridCells,
-            y: smartDivision((Math.abs(coord[1]) - minY), (maxY - minY)) * this.gridCells,
-            z: smartDivision((Math.abs(coord[2]) - minZ), (maxZ - minZ)) * this.gridCells,
-            id: `point_${i}`
-          });
+      if (!limit || i <= limit) {
+        if (Array.isArray(coord)) {
+          if (coord[2]) {
+            this.scatter.push({
+              x: smartDivision((Math.abs(coord[0]) - minX), (maxX - minX)) * this.gridCells,
+              y: smartDivision((Math.abs(coord[1]) - minY), (maxY - minY)) * this.gridCells,
+              z: smartDivision((Math.abs(coord[2]) - minZ), (maxZ - minZ)) * this.gridCells,
+              id: `point_${i}`
+            });
+          }
+          else {
+            this.scatter.push({
+              x: smartDivision((Math.abs(coord[0]) - minX), (maxX - minX)) * this.gridCells,
+              y: smartDivision((Math.abs(coord[1]) - minY), (maxY - minY)) * this.gridCells,
+              z: 0,
+              id: `point_${i}`
+            });
+          }
         }
         else {
           this.scatter.push({
-            x: smartDivision((Math.abs(coord[0]) - minX), (maxX - minX)) * this.gridCells,
-            y: smartDivision((Math.abs(coord[1]) - minY), (maxY - minY)) * this.gridCells,
-            z: 0,
+            x: smartDivision((Math.abs(coord.x) - minX), (maxX - minX)) * this.gridCells,
+            y: smartDivision((Math.abs(coord.y) - minY), (maxY - minY)) * this.gridCells,
+            z: smartDivision((Math.abs(coord.z) - minZ), (maxZ - minZ)) * this.gridCells || 0,
             id: `point_${i}`
           });
         }
-      }
-      else {
-        this.scatter.push({
-          x: smartDivision((Math.abs(coord.x) - minX), (maxX - minX)) * this.gridCells,
-          y: smartDivision((Math.abs(coord.y) - minY), (maxY - minY)) * this.gridCells,
-          z: smartDivision((Math.abs(coord.z) - minZ), (maxZ - minZ)) * this.gridCells || 0,
-          id: `point_${i}`
-        });
       }
     });
 
@@ -243,7 +246,7 @@ class PhotosetGrapher {
     };
 
     this.processData(data, 1000);
-    if (this.optionAnimate) this.animate(44);
+    if (this.optionAnimate) this.animate(5);
   }
 
   processData (data, tt) {
@@ -440,6 +443,7 @@ class PhotosetGrapher {
     if (this.animation) {
       clearInterval(this.animation);
     }
+
     this.mx = currentEvent.x;
     this.my = currentEvent.y;
   }
@@ -449,7 +453,7 @@ class PhotosetGrapher {
     this.mouseX = this.mouseX || 0;
     this.mouseY = this.mouseY || 0;
     this.beta = (currentEvent.x - this.mx + this.mouseX) * Math.PI / 230 ;
-    this.alpha  = (currentEvent.y - this.my + this.mouseY) * Math.PI / 130  * (-1);
+    this.alpha  = (currentEvent.y - this.my + this.mouseY) * Math.PI / 230  * (-1);
 
     const data = {
       grid3d: this.grid3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)(this.xGrid),
@@ -463,6 +467,7 @@ class PhotosetGrapher {
   }
 
   dragEnd () {
+
     this.mouseX = currentEvent.x - this.mx + this.mouseX;
     this.mouseY = currentEvent.y - this.my + this.mouseY;
   }
@@ -470,8 +475,12 @@ class PhotosetGrapher {
   animate (tt) {
 
     this.animation = setInterval(() => {
+      if ((this.alpha - this.startAngle) >= Math.PI/2) {
+        clearInterval(this.animation);
+      }
       this.alpha += Math.PI/360;
       this.beta += 0;
+
       const data = {
         grid3d: this.grid3d.rotateX(this.alpha - this.startAngle)(this.xGrid),
         point3d: this.point3d.rotateX(this.alpha - this.startAngle)(this.scatter),
@@ -492,6 +501,7 @@ class PhotosetGrapher {
       this.processData(data, 0);
     }, tt);
   }
+
 }
 
 module.exports = PhotosetGrapher;
