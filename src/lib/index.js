@@ -20,6 +20,7 @@ const d3 = Object.assign({},
 );
 
 const kScale = 20;
+const kAminate = true;
 
 const smartDivision = (a, b) => {
 
@@ -29,9 +30,8 @@ const smartDivision = (a, b) => {
 
 class PhotosetGrapher {
 
-  constructor (id) {
+  constructor () {
 
-    this.datasetId = id;
     this.target;
     this.cartesianSystem;
     this.width, this.height;
@@ -57,13 +57,24 @@ class PhotosetGrapher {
       this.optionScale = kScale;
     }
 
+    if (this.options && this.options.animate !== undefined) {
+      this.optionAnimate = this.options.animate;
+    }
+    else {
+      this.optionAnimate = kAminate;
+    }
+
     this.gridCells = this.optionScale / 2;
     this.init();
   }
 
   configure (options) {
+
     if (options && options.scale) {
       this.options.scale = options.scale;
+    }
+    if (options && options.animate !== undefined) {
+      this.options.animate = options.animate;
     }
   }
 
@@ -77,8 +88,7 @@ class PhotosetGrapher {
     this.xGrid = [];
     this.beta = 0;
     this.alpha = 0;
-    //this.startAngle = -Math.PI/30;
-    this.startAngle = 0;
+    this.startAngle = -Math.PI/30;
 
     this.cartesianSystem
       .call(
@@ -228,6 +238,7 @@ class PhotosetGrapher {
     };
 
     this.processData(data, 1000);
+    if (this.optionAnimate) this.animate(44);
   }
 
   processData (data, tt) {
@@ -399,7 +410,9 @@ class PhotosetGrapher {
   }
 
   dragStart () {
-
+    if (this.animation) {
+      clearInterval(this.animation);
+    }
     this.mx = currentEvent.x;
     this.my = currentEvent.y;
   }
@@ -409,7 +422,7 @@ class PhotosetGrapher {
     this.mouseX = this.mouseX || 0;
     this.mouseY = this.mouseY || 0;
     this.beta = (currentEvent.x - this.mx + this.mouseX) * Math.PI / 230 ;
-    this.alpha  = (currentEvent.y - this.my + this.mouseY) * Math.PI / 230  * (-1);
+    this.alpha  = (currentEvent.y - this.my + this.mouseY) * Math.PI / 130  * (-1);
 
     const data = {
       grid3d: this.grid3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)(this.xGrid),
@@ -425,6 +438,22 @@ class PhotosetGrapher {
   dragEnd () {
     this.mouseX = currentEvent.x - this.mx + this.mouseX;
     this.mouseY = currentEvent.y - this.my + this.mouseY;
+  }
+
+  animate (tt) {
+
+    this.animation = setInterval(() => {
+      this.beta += Math.PI/180;
+      this.alpha += 0;
+      const data = {
+        grid3d: this.grid3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)(this.xGrid),
+        point3d: this.point3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)(this.scatter),
+        yScale3d: this.yScale3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)([this.yLine]),
+        xScale3d: this.xScale3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)([this.xLine]),
+        zScale3d: this.zScale3d.rotateY(this.beta + this.startAngle).rotateX(this.alpha - this.startAngle)([this.zLine])
+      };
+      this.processData(data, 0);
+    }, tt);
   }
 }
 
