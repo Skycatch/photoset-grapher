@@ -1,5 +1,8 @@
 # Changelog
 
+v1.0.5
+- animate into view
+
 v1.0.4
 - added animate
 
