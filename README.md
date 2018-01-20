@@ -4,6 +4,8 @@
 
 This module is framework agnostic so it can be used with React, Angular, Vue, or whatever other frameworks you so choose.
 
+See **[Example](https://skycatch.github.io/photoset-grapher/sandbox/index.html)**
+
 To use this module in your application import it as follows for the javascript
 
 ```javascript
